@@ -1,2 +1,4 @@
-## 0.0.1 (2018/01/07)
-* initial release
+## 1.0.0 (2018/01/28)
+* renamed
+* unit tests
+* XXH32 and XXH64
