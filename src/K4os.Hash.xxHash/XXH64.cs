@@ -23,7 +23,7 @@ namespace K4os.Hash.xxHash
 			public ulong v4;
 			public fixed ulong mem64[4];
 			public uint memsize;
-		};
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static ulong XXH_rotl64(ulong x, int r) => (x << r) | (x >> (64 - r));
@@ -122,7 +122,7 @@ namespace K4os.Hash.xxHash
 			if (state->memsize + len < 32)
 			{
 				/* fill in tmp buffer */
-				XXH_memcpy((byte*) state->mem64 + state->memsize, input, len);
+				XXH_copy((byte*) state->mem64 + state->memsize, input, len);
 				state->memsize += (uint) len;
 				return;
 			}
@@ -130,7 +130,7 @@ namespace K4os.Hash.xxHash
 			if (state->memsize > 0)
 			{
 				/* tmp buffer is full */
-				XXH_memcpy((byte*) state->mem64 + state->memsize, input, (int) (32 - state->memsize));
+				XXH_copy((byte*) state->mem64 + state->memsize, input, (int) (32 - state->memsize));
 				state->v1 = XXH64_round(state->v1, XXH_read64(state->mem64 + 0));
 				state->v2 = XXH64_round(state->v2, XXH_read64(state->mem64 + 1));
 				state->v3 = XXH64_round(state->v3, XXH_read64(state->mem64 + 2));
@@ -165,12 +165,12 @@ namespace K4os.Hash.xxHash
 
 			if (p < bEnd)
 			{
-				XXH_memcpy(state->mem64, p, (int) (bEnd - p));
+				XXH_copy(state->mem64, p, (int) (bEnd - p));
 				state->memsize = (uint) (bEnd - p);
 			}
 		}
 
-		private ulong XXH64_digest(XXH64_state* state)
+		private static ulong XXH64_digest(XXH64_state* state)
 		{
 			var p = (byte*) state->mem64;
 			var bEnd = (byte*) state->mem64 + state->memsize;

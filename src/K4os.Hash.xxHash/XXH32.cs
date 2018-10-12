@@ -107,7 +107,7 @@ namespace K4os.Hash.xxHash
 			if (state->memsize + len < 16)
 			{
 				/* fill in tmp buffer */
-				XXH_memcpy((byte*) state->mem32 + state->memsize, input, len);
+				XXH_copy((byte*) state->mem32 + state->memsize, input, len);
 				state->memsize += (uint) len;
 				return;
 			}
@@ -115,7 +115,7 @@ namespace K4os.Hash.xxHash
 			if (state->memsize > 0)
 			{
 				/* some data left from previous update */
-				XXH_memcpy((byte*) state->mem32 + state->memsize, input, (int) (16 - state->memsize));
+				XXH_copy((byte*) state->mem32 + state->memsize, input, (int) (16 - state->memsize));
 				var p32 = state->mem32;
 				state->v1 = XXH32_round(state->v1, XXH_read32(p32 + 0));
 				state->v2 = XXH32_round(state->v2, XXH_read32(p32 + 1));
@@ -151,7 +151,7 @@ namespace K4os.Hash.xxHash
 
 			if (p < bEnd)
 			{
-				XXH_memcpy(state->mem32, p, (int) (bEnd - p));
+				XXH_copy(state->mem32, p, (int) (bEnd - p));
 				state->memsize = (uint) (bEnd - p);
 			}
 		}

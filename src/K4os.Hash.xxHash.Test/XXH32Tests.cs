@@ -92,7 +92,7 @@ namespace K4os.Hash.xxHash.Test
 			Assert.Equal(expected, BitConverter.ToUInt32(actual, 0));
 		}
 
-		public uint Theirs32(byte[] bytes) =>
+		private static uint Theirs32(byte[] bytes) =>
 			BitConverter.ToUInt32(new _XXH(sizeof(uint) * 8).ComputeHash(bytes), 0);
 	}
 }

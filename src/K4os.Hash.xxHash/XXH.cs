@@ -16,34 +16,41 @@ namespace K4os.Hash.xxHash
 		{
 			var targetP = (byte*) target;
 
-			while (length > sizeof(ulong))
+			while (length >= sizeof(ulong))
 			{
 				*(ulong*) targetP = 0;
 				targetP += sizeof(ulong);
 				length -= sizeof(ulong);
 			}
 
-			while (length > sizeof(uint))
+			if (length >= sizeof(uint))
 			{
 				*(uint*) targetP = 0;
 				targetP += sizeof(uint);
 				length -= sizeof(uint);
 			}
+			
+			if (length >= sizeof(ushort))
+			{
+				*(ushort*) targetP = 0;
+				targetP += sizeof(ushort);
+				length -= sizeof(ushort);
+			}
 
-			while (length > 0)
+			if (length > 0)
 			{
 				*targetP = 0;
-				targetP++;
-				length--;
+				// targetP++;
+				// length--;
 			}
 		}
 
-		internal static void XXH_memcpy(void* target, void* source, int length)
+		internal static void XXH_copy(void* target, void* source, int length)
 		{
 			var sourceP = (byte*) source;
 			var targetP = (byte*) target;
 
-			while (length > sizeof(ulong))
+			while (length >= sizeof(ulong))
 			{
 				*(ulong*) targetP = *(ulong*) sourceP;
 				targetP += sizeof(ulong);
@@ -51,20 +58,29 @@ namespace K4os.Hash.xxHash
 				length -= sizeof(ulong);
 			}
 
-			while (length > sizeof(uint))
+			if (length >= sizeof(uint))
 			{
 				*(uint*) targetP = *(uint*) sourceP;
 				targetP += sizeof(uint);
 				sourceP += sizeof(uint);
 				length -= sizeof(uint);
 			}
+			
+			if (length >= sizeof(ushort))
+			{
+				*(ushort*) targetP = *(ushort*) sourceP;
+				targetP += sizeof(ushort);
+				sourceP += sizeof(ushort);
+				length -= sizeof(ushort);
+			}
 
-			while (length > 0)
+
+			if (length > 0)
 			{
 				*targetP = *sourceP;
-				targetP += sizeof(byte);
-				sourceP += sizeof(byte);
-				length -= sizeof(byte);
+				// targetP++;
+				// sourceP++;
+				// length--;
 			}
 		}
 	}
