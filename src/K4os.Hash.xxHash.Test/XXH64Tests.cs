@@ -1,8 +1,9 @@
 using System;
+using System.Data.HashFunction.xxHash;
 using System.Text;
 using Xunit;
 using Xunit.Abstractions;
-using _XXH = System.Data.HashFunction.xxHash;
+using _XXH = System.Data.HashFunction.xxHash.xxHashFactory;
 
 // ReSharper disable InconsistentNaming
 
@@ -16,9 +17,6 @@ namespace K4os.Hash.xxHash.Test
 		{
 			_output = output;
 		}
-
-		public ulong Theirs64(byte[] bytes) =>
-			BitConverter.ToUInt64(new _XXH(sizeof(ulong) * 8).ComputeHash(bytes), 0);
 
 		[Theory]
 		[InlineData("hello world")]
@@ -76,6 +74,13 @@ namespace K4os.Hash.xxHash.Test
 			}
 
 			Assert.Equal(XXH64.DigestOf(bytes, 0, bytes.Length), transform.Digest());
+		}
+		
+		private static ulong Theirs64(byte[] bytes)
+		{
+			var algorithm =
+				_XXH.Instance.Create(new xxHashConfig { HashSizeInBits = sizeof(ulong) * 8 });
+			return BitConverter.ToUInt64(algorithm.ComputeHash(bytes).Hash, 0);
 		}
 	}
 }

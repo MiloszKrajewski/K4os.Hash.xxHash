@@ -1,8 +1,9 @@
 using System;
+using System.Data.HashFunction.xxHash;
 using System.Text;
 using Xunit;
 using Xunit.Abstractions;
-using _XXH = System.Data.HashFunction.xxHash;
+using _XXH = System.Data.HashFunction.xxHash.xxHashFactory;
 
 // ReSharper disable InconsistentNaming
 
@@ -12,10 +13,7 @@ namespace K4os.Hash.xxHash.Test
 	{
 		private readonly ITestOutputHelper _output;
 
-		public XXH32Tests(ITestOutputHelper output)
-		{
-			_output = output;
-		}
+		public XXH32Tests(ITestOutputHelper output) { _output = output; }
 
 		[Theory]
 		[InlineData("hello world")]
@@ -92,7 +90,11 @@ namespace K4os.Hash.xxHash.Test
 			Assert.Equal(expected, BitConverter.ToUInt32(actual, 0));
 		}
 
-		private static uint Theirs32(byte[] bytes) =>
-			BitConverter.ToUInt32(new _XXH(sizeof(uint) * 8).ComputeHash(bytes), 0);
+		private static uint Theirs32(byte[] bytes)
+		{
+			var algorithm =
+				_XXH.Instance.Create(new xxHashConfig { HashSizeInBits = sizeof(uint) * 8 });
+			return BitConverter.ToUInt32(algorithm.ComputeHash(bytes).Hash, 0);
+		}
 	}
 }
