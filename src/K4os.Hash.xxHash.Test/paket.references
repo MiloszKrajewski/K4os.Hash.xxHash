@@ -2,4 +2,5 @@
 xunit
 xunit.runner.visualstudio
 
+System.Memory
 System.Data.HashFunction.xxHash

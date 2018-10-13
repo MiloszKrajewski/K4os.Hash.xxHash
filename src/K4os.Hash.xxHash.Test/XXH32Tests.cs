@@ -27,6 +27,23 @@ namespace K4os.Hash.xxHash.Test
 			var actual = XXH32.DigestOf(input, 0, input.Length);
 			Assert.Equal(expected, actual);
 		}
+		
+		[Fact]
+		public unsafe void EmptyHash()
+		{
+			var input = Array.Empty<byte>();
+			
+			var expected = Theirs32(input);
+			
+			var actual1 = XXH32.DigestOf(input, 0, input.Length);
+			Assert.Equal(expected, actual1);
+
+			fixed (byte* inputP = input)
+			{
+				var actual2 = XXH32.DigestOf(inputP, 0);
+				Assert.Equal(expected, actual2);
+			}
+		}
 
 		[Theory]
 		[InlineData(0, 10, 3)]

@@ -1,5 +1,6 @@
 ﻿// ReSharper disable InconsistentNaming
 
+using System;
 using System.Runtime.CompilerServices;
 
 namespace K4os.Hash.xxHash
@@ -82,6 +83,12 @@ namespace K4os.Hash.xxHash
 				// sourceP++;
 				// length--;
 			}
+		}
+		
+		protected static void Validate(byte[] bytes, int offset, int length)
+		{
+			if (bytes == null || offset < 0 || length < 0 || offset + length > bytes.Length)
+				throw new ArgumentException("Invalid buffer boundaries");
 		}
 	}
 }

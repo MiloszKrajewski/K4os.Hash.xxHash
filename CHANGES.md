@@ -1,5 +1,6 @@
-## 1.0.2 (2018/10/12)
-* added overloads for Span  
+## 1.0.3 (2018/10/13)
+* added overloads for Span
+* minor safety tweaks  
 
 ## 1.0.1 (2018/10/12)
 * minor performance improvements

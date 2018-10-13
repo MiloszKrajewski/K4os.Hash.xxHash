@@ -8,6 +8,8 @@ namespace K4os.Hash.xxHash
 {
 	public partial class XXH32
 	{
+		public const uint EmptyHash = 46947589;
+
 		public static unsafe uint DigestOf(void* bytes, int length) =>
 			XXH32_hash(bytes, length, 0);
 
@@ -17,10 +19,12 @@ namespace K4os.Hash.xxHash
 				return DigestOf(bytesP, bytes.Length);
 		}
 
-		public static unsafe uint DigestOf(byte[] bytes, int index, int length)
+		public static unsafe uint DigestOf(byte[] bytes, int offset, int length)
 		{
+			Validate(bytes, offset, length);
+
 			fixed (byte* bytes0 = bytes)
-				return DigestOf(bytes0 + index, length);
+				return DigestOf(bytes0 + offset, length);
 		}
 
 		private XXH32_state _state;
@@ -48,13 +52,12 @@ namespace K4os.Hash.xxHash
 				Update(bytesP, bytes.Length);
 		}
 
-		public unsafe void Update(byte[] array, int index, int length)
+		public unsafe void Update(byte[] bytes, int offset, int length)
 		{
-			if (length <= 0)
-				return;
-
-			fixed (byte* bytesP = &array[index])
-				Update(bytesP, length);
+			Validate(bytes, offset, length);
+			
+			fixed (byte* bytesP = bytes)
+				Update(bytesP + offset, length);
 		}
 
 		public unsafe uint Digest()
