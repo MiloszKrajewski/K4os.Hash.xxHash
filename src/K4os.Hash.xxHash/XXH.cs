@@ -5,8 +5,14 @@ using System.Runtime.CompilerServices;
 
 namespace K4os.Hash.xxHash
 {
+	/// <summary>
+	/// Base class for both <see cref="XXH32"/> and <see cref="XXH64"/>. Do not use directly.
+	/// </summary>
 	public unsafe class XXH
 	{
+		/// <summary>Protected constructor to prevent instantiation.</summary>
+		protected XXH() { }
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static uint XXH_read32(void* p) => *(uint*) p;
 
@@ -85,7 +91,7 @@ namespace K4os.Hash.xxHash
 			}
 		}
 		
-		protected static void Validate(byte[] bytes, int offset, int length)
+		internal static void Validate(byte[] bytes, int offset, int length)
 		{
 			if (bytes == null || offset < 0 || length < 0 || offset + length > bytes.Length)
 				throw new ArgumentException("Invalid buffer boundaries");

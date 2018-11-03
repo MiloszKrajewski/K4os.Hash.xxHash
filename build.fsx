@@ -3,15 +3,23 @@
 
 open Fake
 
+let solutions = Proj.settings |> Config.keys "Build"
+let packages = Proj.settings |> Config.keys "Pack"
+
 let clean () = !! "**/bin/" ++ "**/obj/" |> DeleteDirs
-let build () = Proj.build "src"
-let restore () = Proj.restore "src"
-let test () = Proj.testAll ()
-let release () = Proj.releaseNupkg ()
+let restore () = solutions |> Seq.iter Proj.restore
+let build () = solutions |> Seq.iter Proj.build
+let test () = Proj.xtestAll ()
+let release () = packages |> Proj.packMany
+let publish apiKey = packages |> Seq.iter (Proj.publishNugetOrg apiKey)
+
 
 Target "Clean" (fun _ -> clean ())
 
-Target "Restore" (fun _ -> restore ())
+Target "Restore" (fun _ -> 
+    restore ()
+    Proj.snkGen "K4os.snk"
+)
 
 Target "Build" (fun _ -> build ())
 
@@ -21,18 +29,12 @@ Target "Release" (fun _ -> release ())
 
 Target "Test" (fun _ -> test ())
 
-Target "Release:Nuget" (fun _ ->
-    let apiKey = Proj.settings |> Config.valueOrFail "nuget" "accessKey"
-    Proj.publishNugetOrg apiKey "K4os.Hash.xxHash"
-)
+Target "Release:Nuget" (fun _ -> Proj.settings |> Config.valueOrFail "nuget" "accessKey" |> publish)
 
-"Restore" ==> "Build"
-"Build" ==> "Rebuild"
+"Restore" ==> "Build" ==> "Rebuild" ==> "Release" ==> "Release:Nuget"
 "Clean" ?=> "Restore"
 "Clean" ==> "Rebuild"
-"Rebuild" ==> "Release"
 "Test" ==> "Release"
 "Build" ?=> "Test"
-"Release" ==> "Release:Nuget"
 
 RunTargetOrDefault "Build"

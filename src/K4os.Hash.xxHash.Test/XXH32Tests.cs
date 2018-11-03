@@ -11,6 +11,7 @@ namespace K4os.Hash.xxHash.Test
 {
 	public class XXH32Tests
 	{
+		// ReSharper disable once NotAccessedField.Local
 		private readonly ITestOutputHelper _output;
 
 		public XXH32Tests(ITestOutputHelper output) { _output = output; }

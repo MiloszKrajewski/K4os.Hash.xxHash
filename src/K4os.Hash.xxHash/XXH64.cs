@@ -1,4 +1,5 @@
 ﻿// ReSharper disable InconsistentNaming
+// ReSharper disable RedundantCast
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;

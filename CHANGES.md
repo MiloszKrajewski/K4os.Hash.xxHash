@@ -1,3 +1,6 @@
+## 1.0.4 (2018/11/03)
+* signed assemblies
+
 ## 1.0.3 (2018/10/13)
 * added overloads for Span
 * minor safety tweaks  

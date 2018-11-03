@@ -6,7 +6,13 @@
 .idea/
 .tools/
 paket-files/
-.secrets.config
 
 **/bin/
 **/obj/
+
+*.bak
+*.user
+*.suo
+*.snk
+
+.secrets.cfg
