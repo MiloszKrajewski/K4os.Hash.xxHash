@@ -12,3 +12,6 @@ clitool dotnet-xunit
 
 # for testing only
 nuget System.Data.HashFunction.xxHash
+
+# implicitly imported but we want to control version
+nuget System.Runtime.CompilerServices.Unsafe 4.5.1

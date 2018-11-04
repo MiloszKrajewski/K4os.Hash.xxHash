@@ -24,13 +24,27 @@ namespace K4os.Hash.xxHash.Test
 		[InlineData("")]
 		[InlineData("quick brown fox jumped over the lazy dog")]
 		[InlineData("thirteenchars")]
-		public void SingleBlockXxh32MatchesTheirs(string text)
+		public void SingleBlockXxh64MatchesTheirs(string text)
 		{
 			var input = Encoding.UTF8.GetBytes(text);
 			var expected = Theirs64(input);
 			var actual = XXH64.DigestOf(input, 0, input.Length);
 			Assert.Equal(expected, actual);
 		}
+		
+		[Theory]
+		[InlineData("hello world")]
+		[InlineData("")]
+		[InlineData("quick brown fox jumped over the lazy dog")]
+		[InlineData("thirteenchars")]
+		public void SingleBlockXxh64UsingSpanMatchesTheirs(string text)
+		{
+			var input = Encoding.UTF8.GetBytes(text);
+			var expected = Theirs64(input);
+			var actual = XXH64.DigestOf(input.AsSpan());
+			Assert.Equal(expected, actual);
+		}
+
 		
 		[Fact]
 		public unsafe void EmptyHash()
@@ -47,6 +61,9 @@ namespace K4os.Hash.xxHash.Test
 				var actual2 = XXH64.DigestOf(inputP, 0);
 				Assert.Equal(expected, actual2);
 			}
+
+			var actual3 = XXH64.EmptyHash;
+			Assert.Equal(expected, actual3);
 		}
 
 		[Theory]

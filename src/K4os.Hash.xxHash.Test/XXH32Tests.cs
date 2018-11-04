@@ -29,6 +29,20 @@ namespace K4os.Hash.xxHash.Test
 			Assert.Equal(expected, actual);
 		}
 		
+		[Theory]
+		[InlineData("hello world")]
+		[InlineData("")]
+		[InlineData("quick brown fox jumped over the lazy dog")]
+		[InlineData("thirteenchars")]
+		public void SingleBlockXxh32UsingSpanMatchesTheirs(string text)
+		{
+			var input = Encoding.UTF8.GetBytes(text);
+			var expected = Theirs32(input);
+			var actual = XXH32.DigestOf(input.AsSpan());
+			Assert.Equal(expected, actual);
+		}
+
+		
 		[Fact]
 		public unsafe void EmptyHash()
 		{
@@ -44,6 +58,9 @@ namespace K4os.Hash.xxHash.Test
 				var actual2 = XXH32.DigestOf(inputP, 0);
 				Assert.Equal(expected, actual2);
 			}
+
+			var actual3 = XXH32.EmptyHash;
+			Assert.Equal(expected, actual3);
 		}
 
 		[Theory]

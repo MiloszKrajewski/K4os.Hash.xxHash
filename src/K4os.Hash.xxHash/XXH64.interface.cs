@@ -11,6 +11,9 @@ namespace K4os.Hash.xxHash
 	/// </summary>
 	public partial class XXH64
 	{
+		/// <summary>Hash of empty buffer.</summary>
+		public const ulong EmptyHash = 17241709254077376921;
+		
 		/// <summary>Hash of provided buffer.</summary>
 		/// <param name="bytes">Buffer.</param>
 		/// <param name="length">Length of buffer.</param>

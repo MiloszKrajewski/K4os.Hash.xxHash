@@ -1,3 +1,7 @@
+## 1.0.5 (2018/11/04)
+* forced version for System.Runtime.CompilerServices.Unsafe
+* added tests to cover spans
+
 ## 1.0.4 (2018/11/03)
 * signed assemblies
 

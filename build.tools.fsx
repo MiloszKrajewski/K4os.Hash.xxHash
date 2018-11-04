@@ -123,7 +123,7 @@ module Proj =
     let assemblyVersion = releaseNotes.AssemblyVersion
     let settings = 
         [ "settings"; ".secrets" ]
-        |> Seq.collect (fun fn -> [".ini"; ".cfg"] |> Seq.map (fun ext -> sprintf "%s%s" fn ext)) 
+        |> Seq.collect (fun fn -> [".ini"; ".cfg"] |> Seq.map (fun ext -> sprintf "%s%s" fn ext))
         |> Seq.map Config.tryLoadFile |> Config.merge
     let listProj () =
         let isValidProject projectPath =
