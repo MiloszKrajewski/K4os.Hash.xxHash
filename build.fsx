@@ -1,40 +1,75 @@
-#r ".fake/FakeLib.dll"
+#r "paket:
+    nuget Fake.Core.Target
+    nuget Fake.Core.ReleaseNotes
+    nuget Fake.IO.FileSystem
+    nuget Fake.IO.Zip
+    nuget Fake.Api.GitHub
+    nuget Fake.DotNet.MSBuild
+    nuget Fake.DotNet.Cli
+    nuget Fake.DotNet.Testing.XUnit2
+//"
+
+#load "build.imports.fsx"
 #load "build.tools.fsx"
 
-open Fake
+open Fake.IO
+open Fake.IO.Globbing.Operators
+open Fake.IO.FileSystemOperators
+open Fake.Core
+open Fake.Api
+
+open Tools
 
 let solutions = Proj.settings |> Config.keys "Build"
 let packages = Proj.settings |> Config.keys "Pack"
 
-let clean () = !! "**/bin/" ++ "**/obj/" |> DeleteDirs
-let restore () = solutions |> Seq.iter Proj.restore
-let build () = solutions |> Seq.iter Proj.build
-let test () = Proj.xtestAll ()
+let clean () = !! "**/bin/" ++ "**/obj/" |> Shell.deleteDirs
+let build () = solutions |> Proj.buildMany
+let restore () = solutions |> Proj.restoreMany
+let test () = Proj.testAll ()
 let release () = packages |> Proj.packMany
 let publish apiKey = packages |> Seq.iter (Proj.publishNugetOrg apiKey)
 
-
-Target "Clean" (fun _ -> clean ())
-
-Target "Restore" (fun _ -> 
-    restore ()
-    Proj.snkGen "K4os.snk"
+Target.create "Refresh" (fun _ ->
+    // Proj.regenerateStrongName "K4os.Hash.xxHash.snk"
+    Proj.updateCommonTargets "Common.targets"
 )
 
-Target "Build" (fun _ -> build ())
+Target.create "Clean" (fun _ -> clean ())
 
-Target "Rebuild" ignore
+Target.create "Restore" (fun _ -> restore ())
 
-Target "Release" (fun _ -> release ())
+Target.create "Build" (fun _ -> build ())
 
-Target "Test" (fun _ -> test ())
+Target.create "Rebuild" ignore
 
-Target "Release:Nuget" (fun _ -> Proj.settings |> Config.valueOrFail "nuget" "accessKey" |> publish)
+Target.create "Release" (fun _ -> release ())
 
-"Restore" ==> "Build" ==> "Rebuild" ==> "Release" ==> "Release:Nuget"
-"Clean" ?=> "Restore"
+Target.create "Test" (fun p ->
+    if p.Context.Arguments |> List.contains "notest"
+    then Log.warn "Ignoring tests"
+    else test ()
+)
+
+Target.create "Release:Nuget" (fun _ ->
+    Proj.settings |> Config.valueOrFail "nuget" "accessKey" |> publish
+)
+
+Target.create "Release:GitHub" (fun _ ->
+    let user = Proj.settings |> Config.valueOrFail "github" "user"
+    let token = Proj.settings |> Config.valueOrFail "github" "token"
+    let repository = Proj.settings |> Config.keys "Repository" |> Seq.exactlyOne
+    !! (Proj.outputFolder @@ (sprintf "*.%s.nupkg" Proj.productVersion))
+    |> Proj.publishGitHub repository user token
+)
+
+open Fake.Core.TargetOperators
+
+"Refresh" ==> "Restore" ==> "Build" ==> "Rebuild" ==> "Test" ==> "Release"
+"Release" ==> "Release:GitHub" ==> "Release:Nuget"
 "Clean" ==> "Rebuild"
-"Test" ==> "Release"
+
+"Clean" ?=> "Restore"
 "Build" ?=> "Test"
 
-RunTargetOrDefault "Build"
+Target.runOrDefaultWithArguments "Build"

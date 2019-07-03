@@ -1,3 +1,7 @@
+## 1.0.6 (2019/07/03)
+* moved build process to FAKE 5
+* added .NET 4.5 to supported frameworks
+
 ## 1.0.5 (2018/11/04)
 * forced version for System.Runtime.CompilerServices.Unsafe
 * added tests to cover spans

@@ -1,7 +1,21 @@
 <Project>
   <PropertyGroup>
-    <Version>1.0.5</Version>
-    <AssemblyVersion>1.0.5</AssemblyVersion>
-    <FileVersion>1.0.5</FileVersion>
+    <Version>1.0.6</Version>
+    <AssemblyVersion>1.0.6</AssemblyVersion>
+    <FileVersion>1.0.6</FileVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Authors>Milosz Krajewski</Authors>
+    <PackageId>K4os.Hash.xxHash</PackageId>
+    <Product>K4os.Hash.xxHash</Product>
+    <Copyright>Milosz Krajewski</Copyright>
+    <Description>xxHash hash implementation for .NET</Description>
+    <PackageTags>hash xxHash</PackageTags>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/MiloszKrajewski/K4os.Hash.xxHash/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/MiloszKrajewski/K4os.Hash.xxHash</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MiloszKrajewski/K4os.Hash.xxHash</RepositoryUrl>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>../../K4os.snk</AssemblyOriginatorKeyFile>
+    <!--<PackageIconUrl>...</PackageIconUrl>-->
   </PropertyGroup>
 </Project>
