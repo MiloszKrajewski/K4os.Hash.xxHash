@@ -67,7 +67,7 @@ Target.create "Release:GitHub" (fun _ ->
 open Fake.Core.TargetOperators
 
 "Refresh" ==> "Restore" ==> "Build" ==> "Rebuild" ==> "Test" ==> "Release"
-"Release" ==> "Release:GitHub" ==> "Release:Nuget"
+// "Release" ==> "Release:GitHub" ==> "Release:Nuget"
 "Clean" ==> "Rebuild"
 
 "Clean" ?=> "Restore"
