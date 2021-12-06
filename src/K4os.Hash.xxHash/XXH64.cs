@@ -37,6 +37,9 @@ namespace K4os.Hash.xxHash
 		private static ulong XXH64_mergeRound(ulong acc, ulong val) =>
 			(acc ^ XXH64_round(0, val)) * PRIME64_1 + PRIME64_4;
 
+		#if NET5_0_OR_GREATER
+		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
+		#endif
 		private static ulong XXH64_hash(void* input, int len, ulong seed)
 		{
 			var p = (byte*) input;
@@ -113,6 +116,9 @@ namespace K4os.Hash.xxHash
 			state->v4 = seed - PRIME64_1;
 		}
 
+		#if NET5_0_OR_GREATER
+		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
+		#endif
 		private static void XXH64_update(XXH64_state* state, void* input, int len)
 		{
 			var p = (byte*) input;
@@ -171,6 +177,9 @@ namespace K4os.Hash.xxHash
 			}
 		}
 
+		#if NET5_0_OR_GREATER
+		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
+		#endif
 		private static ulong XXH64_digest(XXH64_state* state)
 		{
 			var p = (byte*) state->mem64;

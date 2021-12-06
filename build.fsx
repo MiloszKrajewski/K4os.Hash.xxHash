@@ -1,12 +1,13 @@
 #r "paket:
-    nuget Fake.Core.Target
-    nuget Fake.Core.ReleaseNotes
-    nuget Fake.IO.FileSystem
-    nuget Fake.IO.Zip
-    nuget Fake.Api.GitHub
-    nuget Fake.DotNet.MSBuild
-    nuget Fake.DotNet.Cli
-    nuget Fake.DotNet.Testing.XUnit2
+	nuget Fake.Core.Target
+	nuget Fake.Core.ReleaseNotes
+	nuget Fake.IO.FileSystem
+	nuget Fake.IO.Zip
+	nuget Fake.Api.GitHub
+	nuget Fake.DotNet.MSBuild
+	nuget Fake.DotNet.Cli
+	nuget Fake.DotNet.Testing.XUnit2
+	nuget Octokit 0.48
 //"
 
 #load "build.imports.fsx"

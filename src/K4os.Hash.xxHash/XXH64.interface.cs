@@ -1,7 +1,6 @@
 ﻿// ReSharper disable InconsistentNaming
 
 using System;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
 namespace K4os.Hash.xxHash
@@ -26,7 +25,7 @@ namespace K4os.Hash.xxHash
 		/// <returns>Digest.</returns>
 		public static unsafe ulong DigestOf(ReadOnlySpan<byte> bytes)
 		{
-			fixed (byte* bytesP = &MemoryMarshal.GetReference(bytes))
+			fixed (byte* bytesP = bytes)
 				return DigestOf(bytesP, bytes.Length);
 		}
 
@@ -68,7 +67,7 @@ namespace K4os.Hash.xxHash
 		/// <param name="bytes">Buffer.</param>
 		public unsafe void Update(ReadOnlySpan<byte> bytes)
 		{
-			fixed (byte* bytesP = &MemoryMarshal.GetReference(bytes))
+			fixed (byte* bytesP = bytes)
 				Update(bytesP, bytes.Length);
 		}
 

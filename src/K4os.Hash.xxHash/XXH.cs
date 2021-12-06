@@ -19,6 +19,9 @@ namespace K4os.Hash.xxHash
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static ulong XXH_read64(void* p) => *(ulong*) p;
 
+		#if NET5_0_OR_GREATER
+		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
+		#endif
 		internal static void XXH_zero(void* target, int length)
 		{
 			var targetP = (byte*) target;
@@ -52,6 +55,9 @@ namespace K4os.Hash.xxHash
 			}
 		}
 
+		#if NET5_0_OR_GREATER
+		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
+		#endif
 		internal static void XXH_copy(void* target, void* source, int length)
 		{
 			var sourceP = (byte*) source;
@@ -80,7 +86,6 @@ namespace K4os.Hash.xxHash
 				sourceP += sizeof(ushort);
 				length -= sizeof(ushort);
 			}
-
 
 			if (length > 0)
 			{

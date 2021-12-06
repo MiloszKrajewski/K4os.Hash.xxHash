@@ -33,6 +33,9 @@ namespace K4os.Hash.xxHash
 		private static uint XXH32_round(uint seed, uint input) =>
 			XXH32_rotl(seed + input * PRIME32_2, 13) * PRIME32_1;
 
+		#if NET5_0_OR_GREATER
+		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
+		#endif
 		private static uint XXH32_hash(void* input, int len, uint seed)
 		{
 			var p = (byte*) input;
@@ -57,7 +60,10 @@ namespace K4os.Hash.xxHash
 				}
 				while (p <= limit);
 
-				h32 = XXH32_rotl(v1, 1) + XXH32_rotl(v2, 7) + XXH32_rotl(v3, 12) + XXH32_rotl(v4, 18);
+				h32 = XXH32_rotl(v1, 1) 
+					+ XXH32_rotl(v2, 7) 
+					+ XXH32_rotl(v3, 12) 
+					+ XXH32_rotl(v4, 18);
 			}
 			else
 			{
@@ -96,6 +102,9 @@ namespace K4os.Hash.xxHash
 			state->v4 = seed - PRIME32_1;
 		}
 
+		#if NET5_0_OR_GREATER
+		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
+		#endif
 		private static void XXH32_update(XXH32_state* state, void* input, int len)
 		{
 			var p = (byte*) input;
@@ -156,6 +165,9 @@ namespace K4os.Hash.xxHash
 			}
 		}
 
+		#if NET5_0_OR_GREATER
+		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
+		#endif
 		private static uint XXH32_digest(XXH32_state* state)
 		{
 			var p = (byte*) state->mem32;

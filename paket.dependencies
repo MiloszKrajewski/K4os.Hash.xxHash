@@ -1,17 +1,13 @@
 storage: none
-framework: auto-detect
-source https://www.nuget.org/api/v2
+framework: net45,net46,netstandard1.6,netstandard2.0,netstandard2.1,netcoreapp3.1,net5.0
+source: https://www.nuget.org/api/v2
 
-nuget System.Memory
+nuget System.Memory framework: net45,net46,netstandard1.6,netstandard2.0
+nuget System.Runtime.CompilerServices.Unsafe < 6 framework: net45,net46,netstandard1.6,netstandard2.0
 
-nuget Microsoft.NET.Test.Sdk
+nuget Microsoft.NET.Test.Sdk < 17
 nuget xunit
 nuget xunit.runner.visualstudio
 
-clitool dotnet-xunit
-
 # for testing only
 nuget System.Data.HashFunction.xxHash
-
-# implicitly imported but we want to control version
-# nuget System.Runtime.CompilerServices.Unsafe 4.5.1
