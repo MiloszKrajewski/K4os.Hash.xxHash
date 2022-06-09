@@ -114,6 +114,22 @@ namespace K4os.Hash.xxHash.Test
 		[InlineData(0, 100)]
 		[InlineData(1, 200)]
 		[InlineData(2, 300)]
+		public void RandomDigestWithSeed32(int seed, int length)
+		{
+			var random = new Random(seed);
+			var bytes = new byte[length];
+			random.NextBytes(bytes);
+
+			var hashSeed = (uint)random.Next();
+			var expected = Theirs32(bytes, hashSeed);
+			var actual = XXH32.DigestOf(bytes, hashSeed);
+			Assert.Equal(expected, actual);
+		}
+
+		[Theory]
+		[InlineData(0, 100)]
+		[InlineData(1, 200)]
+		[InlineData(2, 300)]
 		public void HashAlgorithmWrapperReturnsSameResults(int seed, int length)
 		{
 			var bytes = new byte[length];
@@ -125,10 +141,10 @@ namespace K4os.Hash.xxHash.Test
 			Assert.Equal(expected, BitConverter.ToUInt32(actual, 0));
 		}
 
-		private static uint Theirs32(byte[] bytes)
+		private static uint Theirs32(byte[] bytes, uint seed = 0)
 		{
 			var algorithm =
-				_XXH.Instance.Create(new xxHashConfig { HashSizeInBits = sizeof(uint) * 8 });
+				_XXH.Instance.Create(new xxHashConfig { HashSizeInBits = sizeof(uint) * 8, Seed = seed});
 			return BitConverter.ToUInt32(algorithm.ComputeHash(bytes).Hash, 0);
 		}
 	}

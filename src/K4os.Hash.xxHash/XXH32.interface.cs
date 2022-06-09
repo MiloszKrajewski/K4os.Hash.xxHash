@@ -17,16 +17,16 @@ namespace K4os.Hash.xxHash
 		/// <param name="bytes">Buffer.</param>
 		/// <param name="length">Length of buffer.</param>
 		/// <returns>Digest.</returns>
-		public static unsafe uint DigestOf(void* bytes, int length) =>
-			XXH32_hash(bytes, length, 0);
+		public static unsafe uint DigestOf(void* bytes, int length, uint seed = 0) =>
+			XXH32_hash(bytes, length, seed);
 
 		/// <summary>Hash of provided buffer.</summary>
 		/// <param name="bytes">Buffer.</param>
 		/// <returns>Digest.</returns>
-		public static unsafe uint DigestOf(ReadOnlySpan<byte> bytes)
+		public static unsafe uint DigestOf(ReadOnlySpan<byte> bytes, uint seed = 0)
 		{
 			fixed (byte* bytesP = bytes)
-				return DigestOf(bytesP, bytes.Length);
+				return DigestOf(bytesP, bytes.Length, seed);
 		}
 
 		/// <summary>Hash of provided buffer.</summary>
@@ -34,12 +34,12 @@ namespace K4os.Hash.xxHash
 		/// <param name="offset">Starting offset.</param>
 		/// <param name="length">Length of buffer.</param>
 		/// <returns>Digest.</returns>
-		public static unsafe uint DigestOf(byte[] bytes, int offset, int length)
+		public static unsafe uint DigestOf(byte[] bytes, int offset, int length, uint seed = 0)
 		{
 			Validate(bytes, offset, length);
 
 			fixed (byte* bytes0 = bytes)
-				return DigestOf(bytes0 + offset, length);
+				return DigestOf(bytes0 + offset, length, seed);
 		}
 
 		private XXH32_state _state;
