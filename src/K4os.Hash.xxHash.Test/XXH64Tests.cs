@@ -110,11 +110,27 @@ namespace K4os.Hash.xxHash.Test
 
 			Assert.Equal(XXH64.DigestOf(bytes, 0, bytes.Length), transform.Digest());
 		}
-		
-		private static ulong Theirs64(byte[] bytes)
+
+		[Theory]
+		[InlineData(0, 100)]
+		[InlineData(1, 200)]
+		[InlineData(2, 300)]
+		public void RandomDigestWithSeed64(int seed, int length)
+		{
+			var random = new Random(seed);
+			var bytes = new byte[length];
+			random.NextBytes(bytes);
+
+			var hashSeed = (ulong)random.Next();
+			var expected = Theirs64(bytes, hashSeed);
+			var actual = XXH64.DigestOf(bytes, hashSeed);
+			Assert.Equal(expected, actual);
+		}
+
+		private static ulong Theirs64(byte[] bytes, ulong seed = 0)
 		{
 			var algorithm =
-				_XXH.Instance.Create(new xxHashConfig { HashSizeInBits = sizeof(ulong) * 8 });
+				_XXH.Instance.Create(new xxHashConfig { HashSizeInBits = sizeof(ulong) * 8, Seed = seed });
 			return BitConverter.ToUInt64(algorithm.ComputeHash(bytes).Hash, 0);
 		}
 	}
