@@ -124,7 +124,7 @@ namespace K4os.Hash.xxHash.Test
 			Assert.Equal(expected, BitConverter.ToUInt32(actual, 0));
 		}
 
-		#if NETCOREAPP2_0
+		#if NETCOREAPP2_1
 
 		private static uint Theirs32(byte[] bytes)
 		{
