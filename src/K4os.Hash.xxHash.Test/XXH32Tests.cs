@@ -1,5 +1,5 @@
 using System;
-using System.Data.HashFunction.xxHash;
+using System.Linq;
 using System.Text;
 using Xunit;
 using Xunit.Abstractions;
@@ -28,7 +28,7 @@ namespace K4os.Hash.xxHash.Test
 			var actual = XXH32.DigestOf(input, 0, input.Length);
 			Assert.Equal(expected, actual);
 		}
-		
+
 		[Theory]
 		[InlineData("hello world")]
 		[InlineData("")]
@@ -42,14 +42,13 @@ namespace K4os.Hash.xxHash.Test
 			Assert.Equal(expected, actual);
 		}
 
-		
 		[Fact]
 		public unsafe void EmptyHash()
 		{
 			var input = Array.Empty<byte>();
-			
+
 			var expected = Theirs32(input);
-			
+
 			var actual1 = XXH32.DigestOf(input, 0, input.Length);
 			Assert.Equal(expected, actual1);
 
@@ -125,11 +124,27 @@ namespace K4os.Hash.xxHash.Test
 			Assert.Equal(expected, BitConverter.ToUInt32(actual, 0));
 		}
 
+		#if NETCOREAPP2_0
+
 		private static uint Theirs32(byte[] bytes)
 		{
-			var algorithm =
-				_XXH.Instance.Create(new xxHashConfig { HashSizeInBits = sizeof(uint) * 8 });
+			var config = new System.Data.HashFunction.xxHash.xxHashConfig {
+				HashSizeInBits = sizeof(uint) * 8,
+			};
+			var algorithm = _XXH.Instance.Create(config);
 			return BitConverter.ToUInt32(algorithm.ComputeHash(bytes).Hash, 0);
 		}
+
+		#else
+
+		private static uint Theirs32(byte[] bytes)
+		{
+			var hash = new byte[sizeof(uint)];
+			System.IO.Hashing.XxHash32.Hash(bytes, hash);
+			Array.Reverse(hash);
+			return BitConverter.ToUInt32(hash, 0);
+		}
+
+		#endif
 	}
 }

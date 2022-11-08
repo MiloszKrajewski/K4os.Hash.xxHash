@@ -1,103 +1,153 @@
 ﻿// ReSharper disable InconsistentNaming
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
+using HashT = System.UInt32;
 
-namespace K4os.Hash.xxHash
+namespace K4os.Hash.xxHash;
+
+/// <summary>
+/// xxHash 32-bit.
+/// </summary>
+public partial class XXH32
 {
-	/// <summary>
-	/// xxHash 32-bit.
-	/// </summary>
-	public partial class XXH32
+	/// <summary>Hash of empty buffer.</summary>
+	public const HashT EmptyHash = 46947589;
+
+	/// <summary>Hash of provided buffer.</summary>
+	/// <param name="bytes">Buffer.</param>
+	/// <param name="length">Length of buffer.</param>
+	/// <returns>Digest.</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static unsafe HashT DigestOf(void* bytes, int length) =>
+		DigestOf(bytes, length, 0);
+
+	/// <summary>Hash of provided buffer.</summary>
+	/// <param name="bytes">Buffer.</param>
+	/// <param name="length">Length of buffer.</param>
+	/// <param name="seed">Seed.</param>
+	/// <returns>Digest.</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static unsafe HashT DigestOf(void* bytes, int length, HashT seed) =>
+		XXH32_hash(bytes, length, seed);
+
+	/// <summary>Hash of provided buffer.</summary>
+	/// <param name="bytes">Buffer.</param>
+	/// <returns>Digest.</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static unsafe HashT DigestOf(ReadOnlySpan<byte> bytes)
 	{
-		/// <summary>Hash of empty buffer.</summary>
-		public const uint EmptyHash = 46947589;
+		fixed (byte* bytesP = bytes)
+			return DigestOf(bytesP, bytes.Length);
+	}
 
-		/// <summary>Hash of provided buffer.</summary>
-		/// <param name="bytes">Buffer.</param>
-		/// <param name="length">Length of buffer.</param>
-		/// <returns>Digest.</returns>
-		public static unsafe uint DigestOf(void* bytes, int length) =>
-			XXH32_hash(bytes, length, 0);
+	/// <summary>Hash of provided buffer.</summary>
+	/// <param name="bytes">Buffer.</param>
+	/// <param name="offset">Starting offset.</param>
+	/// <param name="length">Length of buffer.</param>
+	/// <returns>Digest.</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static HashT DigestOf(byte[] bytes, int offset, int length) => 
+		DigestOf(bytes.AsSpan(offset, length));
 
-		/// <summary>Hash of provided buffer.</summary>
-		/// <param name="bytes">Buffer.</param>
-		/// <returns>Digest.</returns>
-		public static unsafe uint DigestOf(ReadOnlySpan<byte> bytes)
-		{
-			fixed (byte* bytesP = bytes)
-				return DigestOf(bytesP, bytes.Length);
-		}
+	private State _state;
 
-		/// <summary>Hash of provided buffer.</summary>
-		/// <param name="bytes">Buffer.</param>
-		/// <param name="offset">Starting offset.</param>
-		/// <param name="length">Length of buffer.</param>
-		/// <returns>Digest.</returns>
-		public static unsafe uint DigestOf(byte[] bytes, int offset, int length)
-		{
-			Validate(bytes, offset, length);
-
-			fixed (byte* bytes0 = bytes)
-				return DigestOf(bytes0 + offset, length);
-		}
-
-		private XXH32_state _state;
-
-		/// <summary>Creates xxHash instance.</summary>
-		public XXH32() => Reset();
-
-		/// <summary>Resets hash calculation.</summary>
-		public unsafe void Reset()
-		{
-			fixed (XXH32_state* stateP = &_state)
-				XXH32_reset(stateP, 0);
-		}
+	/// <summary>Creates xxHash instance.</summary>
+	public XXH32() => Reset();
 		
-		/// <summary>Updates the has using given buffer.</summary>
-		/// <param name="bytes">Buffer.</param>
-		/// <param name="length">Length of buffer.</param>
-		public unsafe void Update(byte* bytes, int length)
-		{
-			fixed (XXH32_state* stateP = &_state)
-				XXH32_update(stateP, bytes, length);
-		}
+	/// <summary>Creates xxHash instance.</summary>
+	public XXH32(HashT seed) => Reset(seed);
+
+	/// <summary>Resets hash calculation.</summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public void Reset() => Reset(ref _state);
 		
-		/// <summary>Updates the has using given buffer.</summary>
-		/// <param name="bytes">Buffer.</param>
-		public unsafe void Update(ReadOnlySpan<byte> bytes)
-		{
-			fixed (byte* bytesP = bytes)
-				Update(bytesP, bytes.Length);
-		}
+	/// <summary>Resets hash calculation.</summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public void Reset(HashT seed) => Reset(ref _state, seed);
 
-		/// <summary>Updates the has using given buffer.</summary>
-		/// <param name="bytes">Buffer.</param>
-		/// <param name="offset">Starting offset.</param>
-		/// <param name="length">Length of buffer.</param>
-		public unsafe void Update(byte[] bytes, int offset, int length)
-		{
-			Validate(bytes, offset, length);
-			
-			fixed (byte* bytesP = bytes)
-				Update(bytesP + offset, length);
-		}
+	/// <summary>Updates the hash using given buffer.</summary>
+	/// <param name="bytes">Buffer.</param>
+	/// <param name="length">Length of buffer.</param>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public unsafe void Update(void* bytes, int length) => 
+		Update(ref _state, (byte*)bytes, length);
+		
+	/// <summary>Updates the hash using given buffer.</summary>
+	/// <param name="bytes">Buffer.</param>
+	/// <param name="length">Length of buffer.</param>
+	[Obsolete("Use void* overload")]
+	public unsafe void Update(byte* bytes, int length) => 
+		Update(ref _state, bytes, length);
 
-		/// <summary>Hash so far.</summary>
-		/// <returns>Hash so far.</returns>
-		public unsafe uint Digest()
-		{
-			fixed (XXH32_state* stateP = &_state)
-				return XXH32_digest(stateP);
-		}
+	/// <summary>Updates the has using given buffer.</summary>
+	/// <param name="bytes">Buffer.</param>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public void Update(ReadOnlySpan<byte> bytes) => 
+		Update(ref _state, bytes);
 
-		/// <summary>Hash so far, as byte array.</summary>
-		/// <returns>Hash so far.</returns>
-		public byte[] DigestBytes() => BitConverter.GetBytes(Digest());
+	/// <summary>Updates the has using given buffer.</summary>
+	/// <param name="bytes">Buffer.</param>
+	/// <param name="offset">Starting offset.</param>
+	/// <param name="length">Length of buffer.</param>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public void Update(byte[] bytes, int offset, int length) => 
+		Update(ref _state, bytes.AsSpan(offset, length));
 
-		/// <summary>Converts this class to <see cref="HashAlgorithm"/></summary>
-		/// <returns><see cref="HashAlgorithm"/></returns>
-		public HashAlgorithm AsHashAlgorithm() =>
-			new HashAlgorithmAdapter(sizeof(uint), Reset, Update, DigestBytes);
+	/// <summary>Hash so far.</summary>
+	/// <returns>Hash so far.</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public HashT Digest() => Digest(_state);
+
+	/// <summary>Hash so far, as byte array.</summary>
+	/// <returns>Hash so far.</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public byte[] DigestBytes() => BitConverter.GetBytes(Digest());
+
+	/// <summary>Converts this class to <see cref="HashAlgorithm"/></summary>
+	/// <returns><see cref="HashAlgorithm"/></returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public HashAlgorithm AsHashAlgorithm() =>
+		new HashAlgorithmAdapter(sizeof(HashT), Reset, Update, DigestBytes);
+		
+	/// <summary>Resets hash calculation.</summary>
+	/// <param name="state">Hash state.</param>
+	/// <param name="seed">Hash seed.</param>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static unsafe void Reset(ref State state, HashT seed = 0)
+	{
+		fixed (State* stateP = &state) 
+			XXH32_reset(stateP, seed);
+	}
+
+	/// <summary>Updates the has using given buffer.</summary>
+	/// <param name="state">Hash state.</param>
+	/// <param name="bytes">Buffer.</param>
+	/// <param name="length">Length of buffer.</param>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static unsafe void Update(ref State state, void* bytes, int length)
+	{
+		fixed (State* stateP = &state)
+			XXH32_update(stateP, bytes, length);
+	}
+		
+	/// <summary>Updates the has using given buffer.</summary>
+	/// <param name="state">Hash state.</param>
+	/// <param name="bytes">Buffer.</param>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static unsafe void Update(ref State state, ReadOnlySpan<byte> bytes)
+	{
+		fixed (byte* bytesP = bytes)
+			Update(ref state, bytesP, bytes.Length);
+	}
+		
+	/// <summary>Hash so far.</summary>
+	/// <returns>Hash so far.</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static unsafe HashT Digest(in State state)
+	{
+		fixed (State* stateP = &state)
+			return XXH32_digest(stateP);
 	}
 }

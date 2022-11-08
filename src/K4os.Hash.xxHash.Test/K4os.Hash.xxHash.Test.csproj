@@ -9,6 +9,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*"/>
     <PackageReference Include="xunit" Version="2.4.2"/>
     <PackageReference Include="System.Data.HashFunction.xxHash" Version="2.0.0"/>
+    <PackageReference Condition="'$(TargetFramework)'!='netcoreapp2.0'" Include="System.IO.Hashing" Version="6.0.2"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\K4os.Hash.xxHash\K4os.Hash.xxHash.csproj"/>

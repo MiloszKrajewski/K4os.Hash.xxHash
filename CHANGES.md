@@ -1,3 +1,7 @@
+## 1.0.8 (2022/11/08)
+* added few more overloads
+* exposed internal state struct so hash can be done without allocations
+
 ## 1.0.7 (2021/12/06)
 * removed dependency on System.Memory (if not needed)
 

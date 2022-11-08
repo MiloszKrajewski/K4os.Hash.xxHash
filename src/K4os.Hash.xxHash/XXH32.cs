@@ -13,9 +13,11 @@ namespace K4os.Hash.xxHash
 		private const uint PRIME32_4 = 668265263u;
 		private const uint PRIME32_5 = 374761393u;
 
+		/// <summary>Internal state of the algorithm.</summary>
 		[StructLayout(LayoutKind.Sequential)]
 		public struct State
 		{
+#pragma warning disable CS1591
 			public uint total_len_32;
 			public bool large_len;
 			public uint v1;
@@ -24,6 +26,7 @@ namespace K4os.Hash.xxHash
 			public uint v4;
 			public fixed uint mem32[4];
 			public uint memsize;
+#pragma warning restore CS1591
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -38,7 +41,7 @@ namespace K4os.Hash.xxHash
 		#endif
 		private static uint XXH32_hash(void* input, int len, uint seed)
 		{
-			var p = (byte*) input;
+			var p = (byte*)input;
 			var bEnd = p + len;
 			uint h32;
 
@@ -60,9 +63,9 @@ namespace K4os.Hash.xxHash
 				}
 				while (p <= limit);
 
-				h32 = XXH32_rotl(v1, 1) 
-					+ XXH32_rotl(v2, 7) 
-					+ XXH32_rotl(v3, 12) 
+				h32 = XXH32_rotl(v1, 1)
+					+ XXH32_rotl(v2, 7)
+					+ XXH32_rotl(v3, 12)
 					+ XXH32_rotl(v4, 18);
 			}
 			else
@@ -70,7 +73,7 @@ namespace K4os.Hash.xxHash
 				h32 = seed + PRIME32_5;
 			}
 
-			h32 += (uint) len;
+			h32 += (uint)len;
 
 			while (p + 4 <= bEnd)
 			{
@@ -107,24 +110,24 @@ namespace K4os.Hash.xxHash
 		#endif
 		private static void XXH32_update(State* state, void* input, int len)
 		{
-			var p = (byte*) input;
+			var p = (byte*)input;
 			var bEnd = p + len;
 
-			state->total_len_32 += (uint) len;
+			state->total_len_32 += (uint)len;
 			state->large_len |= len >= 16 || state->total_len_32 >= 16;
 
 			if (state->memsize + len < 16)
 			{
 				/* fill in tmp buffer */
-				XXH_copy((byte*) state->mem32 + state->memsize, input, len);
-				state->memsize += (uint) len;
+				XXH_copy((byte*)state->mem32 + state->memsize, input, len);
+				state->memsize += (uint)len;
 				return;
 			}
 
 			if (state->memsize > 0)
 			{
 				/* some data left from previous update */
-				XXH_copy((byte*) state->mem32 + state->memsize, input, (int) (16 - state->memsize));
+				XXH_copy((byte*)state->mem32 + state->memsize, input, (int)(16 - state->memsize));
 				var p32 = state->mem32;
 				state->v1 = XXH32_round(state->v1, XXH_read32(p32 + 0));
 				state->v2 = XXH32_round(state->v2, XXH_read32(p32 + 1));
@@ -160,8 +163,8 @@ namespace K4os.Hash.xxHash
 
 			if (p < bEnd)
 			{
-				XXH_copy(state->mem32, p, (int) (bEnd - p));
-				state->memsize = (uint) (bEnd - p);
+				XXH_copy(state->mem32, p, (int)(bEnd - p));
+				state->memsize = (uint)(bEnd - p);
 			}
 		}
 
@@ -170,8 +173,8 @@ namespace K4os.Hash.xxHash
 		#endif
 		private static uint XXH32_digest(State* state)
 		{
-			var p = (byte*) state->mem32;
-			var bEnd = (byte*) state->mem32 + state->memsize;
+			var p = (byte*)state->mem32;
+			var bEnd = (byte*)state->mem32 + state->memsize;
 			uint h32;
 
 			if (state->large_len)

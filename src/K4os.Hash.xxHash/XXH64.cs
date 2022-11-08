@@ -14,9 +14,11 @@ namespace K4os.Hash.xxHash
 		private const ulong PRIME64_4 = 9650029242287828579ul;
 		private const ulong PRIME64_5 = 2870177450012600261ul;
 
+		/// <summary>Internal state of the algorithm.</summary>
 		[StructLayout(LayoutKind.Sequential)]
 		public struct State
 		{
+#pragma warning disable CS1591
 			public ulong total_len;
 			public ulong v1;
 			public ulong v2;
@@ -24,6 +26,7 @@ namespace K4os.Hash.xxHash
 			public ulong v4;
 			public fixed ulong mem64[4];
 			public uint memsize;
+#pragma warning restore CS1591
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -42,7 +45,7 @@ namespace K4os.Hash.xxHash
 		#endif
 		private static ulong XXH64_hash(void* input, int len, ulong seed)
 		{
-			var p = (byte*) input;
+			var p = (byte*)input;
 			var bEnd = p + len;
 			ulong h64;
 
@@ -64,7 +67,8 @@ namespace K4os.Hash.xxHash
 				}
 				while (p <= limit);
 
-				h64 = XXH_rotl64(v1, 1) + XXH_rotl64(v2, 7) + XXH_rotl64(v3, 12) + XXH_rotl64(v4, 18);
+				h64 = XXH_rotl64(v1, 1) + XXH_rotl64(v2, 7) + XXH_rotl64(v3, 12) +
+					XXH_rotl64(v4, 18);
 				h64 = XXH64_mergeRound(h64, v1);
 				h64 = XXH64_mergeRound(h64, v2);
 				h64 = XXH64_mergeRound(h64, v3);
@@ -75,7 +79,7 @@ namespace K4os.Hash.xxHash
 				h64 = seed + PRIME64_5;
 			}
 
-			h64 += (ulong) len;
+			h64 += (ulong)len;
 
 			while (p + 8 <= bEnd)
 			{
@@ -121,23 +125,23 @@ namespace K4os.Hash.xxHash
 		#endif
 		private static void XXH64_update(State* state, void* input, int len)
 		{
-			var p = (byte*) input;
+			var p = (byte*)input;
 			var bEnd = p + len;
 
-			state->total_len += (ulong) len;
+			state->total_len += (ulong)len;
 
 			if (state->memsize + len < 32)
 			{
 				/* fill in tmp buffer */
-				XXH_copy((byte*) state->mem64 + state->memsize, input, len);
-				state->memsize += (uint) len;
+				XXH_copy((byte*)state->mem64 + state->memsize, input, len);
+				state->memsize += (uint)len;
 				return;
 			}
 
 			if (state->memsize > 0)
 			{
 				/* tmp buffer is full */
-				XXH_copy((byte*) state->mem64 + state->memsize, input, (int) (32 - state->memsize));
+				XXH_copy((byte*)state->mem64 + state->memsize, input, (int)(32 - state->memsize));
 				state->v1 = XXH64_round(state->v1, XXH_read64(state->mem64 + 0));
 				state->v2 = XXH64_round(state->v2, XXH_read64(state->mem64 + 1));
 				state->v3 = XXH64_round(state->v3, XXH_read64(state->mem64 + 2));
@@ -172,8 +176,8 @@ namespace K4os.Hash.xxHash
 
 			if (p < bEnd)
 			{
-				XXH_copy(state->mem64, p, (int) (bEnd - p));
-				state->memsize = (uint) (bEnd - p);
+				XXH_copy(state->mem64, p, (int)(bEnd - p));
+				state->memsize = (uint)(bEnd - p);
 			}
 		}
 
@@ -182,8 +186,8 @@ namespace K4os.Hash.xxHash
 		#endif
 		private static ulong XXH64_digest(State* state)
 		{
-			var p = (byte*) state->mem64;
-			var bEnd = (byte*) state->mem64 + state->memsize;
+			var p = (byte*)state->mem64;
+			var bEnd = (byte*)state->mem64 + state->memsize;
 			ulong h64;
 
 			if (state->total_len >= 32)
@@ -193,7 +197,8 @@ namespace K4os.Hash.xxHash
 				var v3 = state->v3;
 				var v4 = state->v4;
 
-				h64 = XXH_rotl64(v1, 1) + XXH_rotl64(v2, 7) + XXH_rotl64(v3, 12) + XXH_rotl64(v4, 18);
+				h64 = XXH_rotl64(v1, 1) + XXH_rotl64(v2, 7) + XXH_rotl64(v3, 12) +
+					XXH_rotl64(v4, 18);
 				h64 = XXH64_mergeRound(h64, v1);
 				h64 = XXH64_mergeRound(h64, v2);
 				h64 = XXH64_mergeRound(h64, v3);
@@ -204,7 +209,7 @@ namespace K4os.Hash.xxHash
 				h64 = state->v3 + PRIME64_5;
 			}
 
-			h64 += (ulong) state->total_len;
+			h64 += (ulong)state->total_len;
 
 			while (p + 8 <= bEnd)
 			{

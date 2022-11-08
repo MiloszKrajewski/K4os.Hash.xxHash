@@ -9,6 +9,5 @@ TBD
 # Build
 
 ```shell
-paket install
 fake build
 ```
