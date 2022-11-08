@@ -15,7 +15,7 @@ namespace K4os.Hash.xxHash
 		private const ulong PRIME64_5 = 2870177450012600261ul;
 
 		[StructLayout(LayoutKind.Sequential)]
-		private struct XXH64_state
+		public struct State
 		{
 			public ulong total_len;
 			public ulong v1;
@@ -107,9 +107,9 @@ namespace K4os.Hash.xxHash
 			return h64;
 		}
 
-		private static void XXH64_reset(XXH64_state* state, ulong seed)
+		private static void XXH64_reset(State* state, ulong seed)
 		{
-			XXH_zero(state, sizeof(XXH64_state));
+			XXH_zero(state, sizeof(State));
 			state->v1 = seed + PRIME64_1 + PRIME64_2;
 			state->v2 = seed + PRIME64_2;
 			state->v3 = seed + 0;
@@ -119,7 +119,7 @@ namespace K4os.Hash.xxHash
 		#if NET5_0_OR_GREATER
 		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
 		#endif
-		private static void XXH64_update(XXH64_state* state, void* input, int len)
+		private static void XXH64_update(State* state, void* input, int len)
 		{
 			var p = (byte*) input;
 			var bEnd = p + len;
@@ -180,7 +180,7 @@ namespace K4os.Hash.xxHash
 		#if NET5_0_OR_GREATER
 		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
 		#endif
-		private static ulong XXH64_digest(XXH64_state* state)
+		private static ulong XXH64_digest(State* state)
 		{
 			var p = (byte*) state->mem64;
 			var bEnd = (byte*) state->mem64 + state->memsize;

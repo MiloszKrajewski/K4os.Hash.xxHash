@@ -31,13 +31,8 @@ namespace K4os.Hash.xxHash
 		/// <inheritdoc />
 		public override int HashSize { get; }
 
-		#if NETSTANDARD1_6
-		/// <summary>Current hash.</summary>
-		public byte[] Hash => _digest();
-		#else
 		/// <inheritdoc />
 		public override byte[] Hash => _digest();
-		#endif
 
 		/// <inheritdoc />
 		protected override void HashCore(byte[] array, int ibStart, int cbSize) =>

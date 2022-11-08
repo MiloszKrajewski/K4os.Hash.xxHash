@@ -14,7 +14,7 @@ namespace K4os.Hash.xxHash
 		private const uint PRIME32_5 = 374761393u;
 
 		[StructLayout(LayoutKind.Sequential)]
-		private struct XXH32_state
+		public struct State
 		{
 			public uint total_len_32;
 			public bool large_len;
@@ -93,9 +93,9 @@ namespace K4os.Hash.xxHash
 			return h32;
 		}
 
-		private static void XXH32_reset(XXH32_state* state, uint seed)
+		private static void XXH32_reset(State* state, uint seed)
 		{
-			XXH_zero(state, sizeof(XXH32_state));
+			XXH_zero(state, sizeof(State));
 			state->v1 = seed + PRIME32_1 + PRIME32_2;
 			state->v2 = seed + PRIME32_2;
 			state->v3 = seed + 0;
@@ -105,7 +105,7 @@ namespace K4os.Hash.xxHash
 		#if NET5_0_OR_GREATER
 		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
 		#endif
-		private static void XXH32_update(XXH32_state* state, void* input, int len)
+		private static void XXH32_update(State* state, void* input, int len)
 		{
 			var p = (byte*) input;
 			var bEnd = p + len;
@@ -168,7 +168,7 @@ namespace K4os.Hash.xxHash
 		#if NET5_0_OR_GREATER
 		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
 		#endif
-		private static uint XXH32_digest(XXH32_state* state)
+		private static uint XXH32_digest(State* state)
 		{
 			var p = (byte*) state->mem32;
 			var bEnd = (byte*) state->mem32 + state->memsize;

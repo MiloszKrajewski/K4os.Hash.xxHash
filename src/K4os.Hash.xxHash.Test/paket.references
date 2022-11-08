@@ -1,7 +1,0 @@
-﻿System.Memory
-
-Microsoft.NET.Test.Sdk
-xunit
-xunit.runner.visualstudio
-
-System.Data.HashFunction.xxHash
